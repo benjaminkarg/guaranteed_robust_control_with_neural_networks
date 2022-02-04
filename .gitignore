@@ -1,0 +1,8 @@
+# Compiled Python and Matlab code
+*.pyc
+*.asv
+
+# Data files and documents
+*.mat
+*.h5
+*.pdf
