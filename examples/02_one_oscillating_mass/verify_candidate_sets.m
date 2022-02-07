@@ -6,7 +6,8 @@ addpath('../../auxiliary_funs/');
 %% Params
 u_lb = -5.0; % lower bound of control input
 u_ub =  5.0; % upper bound of control input
-r_max = 5;  % maximum number of iterations
+r_max = 10;  % maximum number of iterations
+check_potential_MRPI = false; % either check a potential MRPI derived via rungger-tabuada or use random set
 
 
 %% Load the neural network
@@ -22,16 +23,23 @@ load('./data/system_and_problem_matrices.mat');
 
 % Create candidate set for r-step invariance
 % in this case the MRCI via rungger-tabuada
-load('./data/MRCI.mat');
-% MRCI_A = [eye(2); -eye(2);];
-% MRCI_b = [2.0; 1.5; 2.0; 1.5];
-X_s = Polyhedron(MRCI_A, MRCI_b);
+if check_potential_MRPI
+    load('./data/MRCI.mat');
+    X_s = Polyhedron(MRCI_A, MRCI_b);
+else
+    C_A = [eye(2); -eye(2);];
+    C_b = [1.5; 1.5; 1.5; 1.5];
+    X_s = Polyhedron(C_A, C_b);
+end
 
 % hyperplanes to be considered for over-approximation of the one-step
 % reachable sets, this case the same hyperplanes as for the MRCI
-Hp = MRCI_A;
-% Hp = rand(20, 2) * 2 - 1;
-% Hp = [MRCI_A; Hp];
+if check_potential_MRPI
+    Hp = MRCI_A;
+else
+    rng(1234);
+    Hp = rand(50, 2) * 2 - 1;
+end
 
 % disturbance set
 D = Polyhedron(H_d, h_d);
