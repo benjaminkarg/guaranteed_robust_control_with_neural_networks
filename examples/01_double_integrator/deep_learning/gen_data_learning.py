@@ -4,6 +4,9 @@ import pdb
 import matplotlib.pyplot as plt
 plt.ion()
 
+import sys
+sys.path.append('../multi_stage_mpc')
+
 from template_model import *
 from template_mpc import *
 from template_simulator import *
@@ -73,6 +76,5 @@ while (c_samples < n_samples):
 
 # Save results
 if save_results:
-    pdb.set_trace()
     exp_dic = {'X': np.hstack(X), 'U': np.hstack(U_robust)}
     sio.savemat('../data/data_learning.mat', exp_dic)
