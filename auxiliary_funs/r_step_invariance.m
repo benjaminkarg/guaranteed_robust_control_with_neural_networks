@@ -4,7 +4,7 @@ function [r, sets, success] = r_step_invariance(network, Hp, X, X_s, D, r_max, A
 % X_s: Polyhedron describing the set in the state space to be verified
 % D: Polyhedron describing the disturbances
 % r_max: maximum number of steps to consider for $r$-step invariance
-% A, B, E: system matrices from x_plus = A * x + B * u + E * d 
+% A, B, E: system matrices from x_plus = A * x + B * u + E * d
 
 % Defaul values
 success = false;
@@ -53,7 +53,7 @@ ops = sdpsettings('solver', 'gurobi');
 % Solve the problem
 intermediate_sets = [X_s];
 for r_iter = 1:r_max
-    
+
     % next iteration
     b_max = zeros(size(Hp,1),1);
     for i = 1:size(Hp,1)
@@ -66,6 +66,7 @@ for r_iter = 1:r_max
     if ~X.contains(X_new)
         success = false;
         r = r_iter;
+        intermediate_sets = horzcat(intermediate_sets, X_new);
         sets = intermediate_sets;
         disp('No admissible r-step invariant set found!');
         break
@@ -84,8 +85,7 @@ for r_iter = 1:r_max
         % Update constraints
         cons(2) = [Hp * x0 <= b_max];
     end
-    
-end
 
 end
 
+end
