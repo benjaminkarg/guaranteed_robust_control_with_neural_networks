@@ -46,8 +46,8 @@ def template_simulator(model):
 
     def p_fun(t_now):
         p_template['e'] = np.zeros(p_template['e'].shape)
-        p_template['w1'] = np.random.uniform(-0.05, 0.0)
-        p_template['w2'] = np.random.uniform(-0.05, 0.0)
+        p_template['w1'] = np.random.uniform(-0.10, 0.10)
+        p_template['w2'] = np.random.uniform(-0.10, 0.10)
         return p_template
 
     simulator.set_p_fun(p_fun)

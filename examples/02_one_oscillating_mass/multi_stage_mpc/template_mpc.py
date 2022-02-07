@@ -61,7 +61,7 @@ def template_mpc(model):
     mpc.set_objective(mterm=mterm, lterm=lterm)
     mpc.set_rterm(u=0.0)
 
-    max_x = np.array([[4.0], [6.0]])
+    max_x = np.array([[4.0], [2.0]])
 
     mpc.bounds['lower','_x','x'] = -max_x
     mpc.bounds['upper','_x','x'] =  max_x
@@ -73,9 +73,9 @@ def template_mpc(model):
     mpc.set_nl_cons('MRCI', invA @ _x['x'], ub = invb)
 
     # Uncertainties
-    e_var  = np.array([-0.01,  0.01])
-    w1_var = np.array([-0.05, 0.05])
-    w2_var = np.array([-0.05, 0.05])
+    e_var  = np.array([-0.05, 0.05])
+    w1_var = np.array([-0.10, 0.10])
+    w2_var = np.array([-0.10, 0.10])
 
     mpc.set_uncertainty_values(e = e_var, w1 = w1_var, w2 = w2_var)
 
