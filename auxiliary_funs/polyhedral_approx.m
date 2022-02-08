@@ -17,7 +17,7 @@ function [h] = polyhedral_approx(X, H)
     
     parfor i = 1:size(X,1)
        x_cur = X(i,:)';
-       b_ineq = H * x_cur;
+       b_ineq = -H * x_cur;
        res = linprog(f, A_ineq, b_ineq, [], [], lb, ub);
        h_coll(:, i) = res;
     end
