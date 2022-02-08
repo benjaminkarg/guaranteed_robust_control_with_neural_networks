@@ -56,6 +56,7 @@ def gen_data_max_RPI(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator,
 
             # increase counter
             counter_sim += 1
+            print(f'Trajectory {counter_sim}  of {n_sim}')
 
             # save results
             X.append(np.copy(simulator.data['_x']))
