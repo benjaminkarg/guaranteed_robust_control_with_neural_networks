@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.io as sio
+from casadi import *
+import multiprocessing as mp
 import pdb
 
 
@@ -25,44 +27,44 @@ def gen_data_mRPI(nn_controller, u_lb, u_ub, simulator, estimator, n_steps, save
     sio.savemat(savename, exp_dic)
 
 
-def approx_mRPI(X, Hp, data_split_size, hp_split_size, savename):
-    """
-        X contains all data points: n_points x nx
-        Hp are the directions of the hyperplanes: n_hp x nx
-        data_split_size: number of data points to consider at one time
-        hp_split_size: number of hyperplanes to fit at one time
-    """
 
-    n_data_splits = np.ceil(x_raw.shape[0]/data_split_size)
-    X_split = [x_raw[i*data_split_size:(i+1)*data_split_size,:] for i in range(int(n_data_splits))]
-
-    n_hp_splits = np.ceil(Hp.shape[0]/hp_split_size)
-    HP_split = [A_raw[i*hp_split_size:(i+1)*hp_split_size,:] for i in range(int(n_hp_splits))]
-
-    """ Compute polyhedron """
-    B = []
-    counter = 1
-    for x in X_split:
-        b_mean = []
-        for A in HP_split:
-            b = SX.sym("b", A.shape[0], 1)
-            print(f'\n\n\nSolvin problem {counter} of {int(n_data_splits*n_hp_splits)}\n\n\n')
-            g = [(A@x[i,:].reshape(-1,1) - b) for i in range(x.shape[0])]
-            g.append(-b) # b > 0
-            nlp = {'x':b, 'f':np.ones((1,A.shape[0]))@b, 'g':vertcat(*g)}
-            S = nlpsol('S', 'ipopt', nlp)
-            r = S(lbg=-inf, ubg = 0)
-            b_res = np.reshape(r['x'], (-1, 1))
-
-            counter += 1
-            b_mean.append(b_res)
-
-        B.append(np.vstack(b_mean))
-
-    """ Get final bounds """
-    b_final = np.reshape(np.max(np.hstack(B), axis=1), (-1, 1))
+def gen_data_max_RPI(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator, estimator, n_sim, n_steps, savename):
+    """ Simulate n_sim closed-loop trajectories of length n_steps to use for the approximation of a maximum RPI """
 
 
-    """ Save results """
-    exp_dic = {'mRPI_A': Hp, 'mRPI_b': np.reshape(b_final, (-1, 1))}
+    X = []
+
+    counter_sim = 0
+    while (counter_sim < n_sim):
+
+        # generate random initial state and set initial values
+        x0 = np.random.uniform(x_lb, x_ub)
+        simulator.x0 = x0
+        estimator.x0 = x0
+
+
+        """ Run closed-loop simulation """
+        for _ in range(n_steps):
+            u0 = nn_controller.predict(x0.T)
+            u0_sat = np.minimum(np.maximum(u0.T, u_lb), u_ub)
+            y_next = simulator.make_step(u0.T)
+            x0 = estimator.make_step(y_next)
+
+        # check if trajectory admissible
+        admissible = [np.all((H_x @ np.reshape(x, (-1, 1))) <= h_x) for x in simulator.data['_x']]
+        if np.all(admissible):
+
+            # increase counter
+            counter_sim += 1
+
+            # save results
+            X.append(np.copy(simulator.data['_x']))
+
+        # reset modules
+        simulator.reset_history()
+        estimator.reset_history()
+
+
+    """ Save data """
+    exp_dic = {'X': np.vstack(X)}
     sio.savemat(savename, exp_dic)
