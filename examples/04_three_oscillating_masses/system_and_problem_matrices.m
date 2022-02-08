@@ -88,4 +88,4 @@ if not(isfolder('data'))
     mkdir('data')
 end
 savestr = strcat('data/system_and_problem_matrices.mat');
-save(savestr, 'A', 'B', 'E', 'H_w', 'h_w', 'Q', 'R', 'K', 'S');
+save('data/system_and_problem_matrices.mat', 'A', 'B', 'E', 'Q', 'R', 'K', 'S', 'H_x', 'h_x', 'H_u', 'h_u', 'H_d', 'h_d', 'H_delta', 'h_delta', 'H_w', 'h_w');
