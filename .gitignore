@@ -1,6 +1,7 @@
 # Compiled Python and Matlab code
 *.pyc
 *.asv
+__pycache__
 
 # Data files and documents
 *.mat
