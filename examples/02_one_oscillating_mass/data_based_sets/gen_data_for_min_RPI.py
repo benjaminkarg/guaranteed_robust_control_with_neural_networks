@@ -12,8 +12,8 @@ from template_simulator import *
 """ Params """
 u_lb = np.array([[-5.0]])
 u_ub = np.array([[ 5.0]])
-n_steps = 2000
-savename = '../data/mRPI_sim_data.mat'
+n_steps = 1000
+savename = '../data/min_RPI_sim_data.mat'
 
 
 """ Get configured do-mpc modules """
