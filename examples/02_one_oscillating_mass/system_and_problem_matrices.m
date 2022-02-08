@@ -41,12 +41,11 @@ U = Polyhedron(H_u, h_u);
 %% Disturbance and approximation error set
 % Disturbance
 H_d = [eye(nx); -eye(nx)];
-h_d = ones(4,1)*0.1;
+h_d = ones(4,1) * 0.1;
 D = Polyhedron(H_d, h_d);
 
 % Approximation error learning
 H_delta = [ 1; -1];
-% h_delta = [1.0; 1.0];
 h_delta = [0.05; 0.05];
 Delta = Polyhedron(H_delta, h_delta);
 X_delta = affineMap(Delta, B); % transform from input to state space
