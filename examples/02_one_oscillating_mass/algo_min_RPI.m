@@ -5,7 +5,7 @@ addpath('../../auxiliary_funs/');
 %% Params
 u_ub =  5.0;
 u_lb = -5.0;
-k_max = 30;
+k_max = 100;
 
 
 %% Load the neural network
@@ -18,9 +18,9 @@ load('./data/system_and_problem_matrices.mat');
 
 
 %% Load control invariant set
-load('./data/verification_MRCI_analytical.mat');
-A_inv = H{2};
-b_inv = h{2};
+load('./data/verification_MRCI_candidate.mat');
+A_inv = H{end};
+b_inv = h{end};
 X_s = Polyhedron(A_inv, b_inv);
 
 % admissible state space
@@ -31,13 +31,14 @@ D = Polyhedron(H_d, h_d);
 
 
 %% Generate hyperplane directions
-n_comb = 5;
+n_comb = 3;
 Hp = combinator(n_comb, 2, 'p', 'r');        
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all  zeros row
 
 
 %% Use YALMIP
+tic;
 iter_sets = [];
 for k = 1:k_max
     
@@ -53,6 +54,7 @@ for k = 1:k_max
     end
     
 end
+comp_time = toc;
 
 
 %% Plot result
@@ -71,4 +73,4 @@ for i = 1:length(iter_sets)
     H{i,1} = iter_sets(i,1).A;
     h{i,1} = iter_sets(i,1).b;
 end
-save('data/iterative_min_RPI.mat', 'H', 'h');
+save('data/iterative_min_RPI.mat', 'H', 'h', 'comp_time');

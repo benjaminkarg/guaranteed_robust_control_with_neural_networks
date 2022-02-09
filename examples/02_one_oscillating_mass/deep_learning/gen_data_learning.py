@@ -13,8 +13,8 @@ from template_simulator import *
 
 
 """ User settings: """
-np.random.seed(400)
-n_samples = 4000
+np.random.seed(4302)
+n_samples = 2000
 save_results = True
 
 
@@ -47,11 +47,7 @@ while (c_samples < n_samples):
     x_pot = np.random.uniform(x_min, x_max)
 
     # check if x_pot belongs to MRCI
-    if np.all(invA @ x_pot < invb):
-
-        # increase sample counter
-        c_samples += 1
-        print(f'\n\nSample {c_samples}/{n_samples}\n\n')
+    if np.all(invA @ x_pot < invb * 1.1):
 
         # initialize do-mpc modules
         mpc.x0 = x_pot
@@ -64,9 +60,17 @@ while (c_samples < n_samples):
         y_next = simulator.make_step(u0)
         x0 = estimator.make_step(y_next)
 
-        # save results
-        X.append(np.reshape(x_pot, (-1,1)))
-        U_robust.append(np.reshape(u0, (-1,1)))
+
+        # save results if problem was solved successfully
+        if mpc.solver_stats['success']:
+
+            # increase sample counter
+            c_samples += 1
+            print(f'\n\nSample {c_samples}/{n_samples}\n\n')
+
+            # save results
+            X.append(np.reshape(x_pot, (-1,1)))
+            U_robust.append(np.reshape(u0, (-1,1)))
 
         # reset modules
         mpc.reset_history()

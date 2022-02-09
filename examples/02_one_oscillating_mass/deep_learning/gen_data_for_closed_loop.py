@@ -26,6 +26,12 @@ H_x = np.array(data['H_x'], dtype = 'float')
 h_x = np.array(data['h_x'], dtype = 'float')
 
 
+""" Load r-step invariant set """
+nx = 2
+A_inv = np.vstack([np.eye(nx), -np.eye(nx)])
+b_inv = np.ones((2 * nx, 1)) * 1.5
+
+
 """ Get configured do-mpc modules """
 model = template_model()
 mpc = tf.keras.models.load_model('../data/nn_controller.h5')
@@ -34,4 +40,4 @@ estimator = do_mpc.estimator.StateFeedback(model)
 
 
 """ Generate data """
-gen_data_closed_loop(mpc, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator, estimator, n_sim, n_steps, savename)
+gen_data_closed_loop(mpc, u_lb, u_ub, A_inv, b_inv, x_lb, x_ub, H_x, h_x, simulator, estimator, n_sim, n_steps, savename)

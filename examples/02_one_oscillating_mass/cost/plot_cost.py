@@ -30,4 +30,4 @@ for avg_cost_traj in avg_cost:
 max_cost = sio.loadmat('./../data/worst_case_cost_min_RPI.mat')['max_cost']
 ub = np.ones((avg_cost[0].shape[0], 1)) * max_cost;
 ax.plot(ub, c = 'C1', lw = 2.0, ls = '-.', label = 'upper bound')
-# ax.set_xlim([0, 200])
+ax.set_xlim([0, 25])

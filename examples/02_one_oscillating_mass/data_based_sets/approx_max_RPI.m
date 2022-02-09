@@ -4,7 +4,6 @@ addpath('../../../auxiliary_funs/');
 
 
 %% Params
-n_hp = 1000;
 dataset = './../data/data_learning.mat';
 saveloc = './../data/approx_max_RPI_sim_based.mat';
 
@@ -17,8 +16,10 @@ ns = size(X,1);
 
 
 %% Generate direction of hyperplanes
-rng(13209);
-RPI_A = rand(n_hp, nx) * 2 - 1;
+n_comb = 10;
+RPI_A = combinator(n_comb, 2, 'p', 'r');
+RPI_A = (RPI_A - 1) / (n_comb - 1) * 2 - 1;
+RPI_A = RPI_A(any(RPI_A, 2), :);
 
 
 %% Compute tight bounds

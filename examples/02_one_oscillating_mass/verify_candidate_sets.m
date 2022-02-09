@@ -27,13 +27,12 @@ load('./data/system_and_problem_matrices.mat');
 if strcmp(check, 'analytical')
     load('./data/MRCI.mat');
     X_s = Polyhedron(MRCI_A, MRCI_b);
-%     X_s = Polyhedron(RPI_A, RPI_b);
 elseif strcmp(check, 'data_based')
     load('./data/approx_max_RPI_sim_based.mat');
     X_s = Polyhedron(RPI_A, RPI_b);
 elseif strcmp(check, 'candidate')
     C_A = [eye(2); -eye(2);];
-    C_b = [1.5; 1.5; 1.5; 1.5];
+    C_b = [1.5; 1.0; 1.5; 1.0];
     X_s = Polyhedron(C_A, C_b);
 end
 
@@ -42,8 +41,10 @@ end
 if strcmp(check, 'analytical')
     Hp = MRCI_A;
 else
-    rng(1234);
-    Hp = rand(100, 2) * 2 - 1;
+    n_comb = 3;
+    Hp = combinator(n_comb, 2, 'p', 'r');
+    Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;
+    Hp = Hp(any(Hp, 2), :);
 end
 
 % disturbance set
