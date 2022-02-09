@@ -28,11 +28,13 @@ def gen_data_mRPI(nn_controller, u_lb, u_ub, simulator, estimator, n_steps, save
 
 
 
-def gen_data_max_RPI(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator, estimator, n_sim, n_steps, savename):
-    """ Simulate n_sim closed-loop trajectories of length n_steps to use for the approximation of a maximum RPI """
+def gen_data_closed_loop(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator, estimator, n_sim, n_steps, savename):
+    """ Simulate n_sim closed-loop trajectories of length n_steps """
 
 
     X = []
+    U = []
+    cost = []
 
     counter_sim = 0
     while (counter_sim < n_sim):
@@ -60,6 +62,8 @@ def gen_data_max_RPI(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator,
 
             # save results
             X.append(np.copy(simulator.data['_x']))
+            U.append(np.copy(simulator.data['_u']))
+            cost.append(np.copy(simulator.data['_aux', 'stage_cost']))
 
         # reset modules
         simulator.reset_history()
@@ -67,5 +71,5 @@ def gen_data_max_RPI(nn_controller, u_lb, u_ub, x_lb, x_ub, H_x, h_x, simulator,
 
 
     """ Save data """
-    exp_dic = {'X': np.vstack(X)}
+    exp_dic = {'X': X, 'U': U, 'cost': cost}
     sio.savemat(savename, exp_dic)
