@@ -8,7 +8,9 @@ function [r, sets, success] = r_step_invariance(network, Hp, X, X_s, D, r_max, A
 
 % Defaul values
 success = false;
+r = 0;
 M = 1e5; % probably high enough value, should be computed by considering the corresponding NN
+sets = [X_s];
 
 % Unpack network
 weights = network.weights;
@@ -63,6 +65,8 @@ for r_iter = 1:r_max
     end
     % Check if resulting set belongs to feasible state space
     X_new = Polyhedron(Hp, b_max);
+    eps = 1e-3;
+    X_new_eps = Polyhedron(Hp, b_max * (1.0 + eps));
     if ~X.contains(X_new)
         success = false;
         r = r_iter;
@@ -72,7 +76,7 @@ for r_iter = 1:r_max
         break
     end
     % break if feasible set found
-    if X_s.contains(X_new)
+    if X_s.contains(X_new_eps)
         success = true;
         disp('Admissible r-step invariant set found!');
         r = r_iter;
@@ -82,6 +86,7 @@ for r_iter = 1:r_max
     else
         % save intermediate results
         intermediate_sets = horzcat(intermediate_sets, X_new);
+        sets = intermediate_sets;
         % Update constraints
         cons(2) = [Hp * x0 <= b_max];
     end
