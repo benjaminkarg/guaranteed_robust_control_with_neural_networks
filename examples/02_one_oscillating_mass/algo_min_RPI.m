@@ -32,7 +32,7 @@ D = Polyhedron(H_d, h_d);
 
 %% Generate hyperplane directions
 n_comb = 3;
-Hp = combinator(n_comb, 2, 'p', 'r');        
+Hp = combinator(n_comb, 2, 'p', 'r');
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all  zeros row
 
@@ -41,10 +41,10 @@ Hp = Hp(any(Hp, 2), :);                 % remove all  zeros row
 tic;
 iter_sets = [];
 for k = 1:k_max
-    
+
     % Compute succesor set
     [r, sets, success] = r_step_invariance(network, Hp, X, X_s, D, 1, A, B, E);
-    
+
     % Check if succesor set
     if success
         iter_sets = horzcat(iter_sets, sets(1));
@@ -52,7 +52,7 @@ for k = 1:k_max
     else
         break
     end
-    
+
 end
 comp_time = toc;
 
