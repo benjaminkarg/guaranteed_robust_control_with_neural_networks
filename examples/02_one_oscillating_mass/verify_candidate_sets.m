@@ -32,7 +32,7 @@ elseif strcmp(check, 'data_based')
     X_s = Polyhedron(RPI_A, RPI_b);
 elseif strcmp(check, 'candidate')
     C_A = [eye(2); -eye(2);];
-    C_b = [1.5; 1.0; 1.5; 1.0];
+    C_b = ones(4, 1) * 1.5;
     X_s = Polyhedron(C_A, C_b);
 end
 
