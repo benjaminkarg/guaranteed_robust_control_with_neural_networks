@@ -7,7 +7,7 @@ addpath('../../auxiliary_funs/');
 u_lb = [-5.0; -5.0]; % lower bound of control input
 u_ub = [ 5.0;  5.0]; % upper bound of control input
 r_max = 10;  % maximum number of iterations
-check_potential_MRPI = false; % either check a potential MRPI derived via rungger-tabuada or use random set
+check = 'analytical'; %either 'analytical' to check MRPI derived via rungge-tabuada, 'data_based' to check based on learning data or 'candidate' 
 
 
 %% Load the neural network
@@ -26,10 +26,13 @@ nw = size(E, 2);
 
 % Create candidate set for r-step invariance
 % in this case the MRCI via rungger-tabuada
-if check_potential_MRPI
+if strcmp(check, 'analytical')
     load('./data/MRCI.mat');
     X_s = Polyhedron(MRCI_A, MRCI_b);
-else
+elseif strcmp(check, 'data_based')
+    load('./data/approx_max_RPI_sim_based.mat');
+    X_s = Polyhedron(RPI_A, RPI_b);
+elseif strcmp(check, 'candidate')
     C_A = [eye(nx); -eye(nx)];
     C_b = ones(2 * nx, 1) * 1.5;
     X_s = Polyhedron(C_A, C_b);
@@ -37,11 +40,13 @@ end
 
 % hyperplanes to be considered for over-approximation of the one-step
 % reachable sets, this case the same hyperplanes as for the MRCI
-if check_potential_MRPI
+if strcmp(check, 'analytical')
     Hp = MRCI_A;
 else
-    rng(123456);
-    Hp = rand(2000, nx) * 2 - 1;
+    n_comb = 3;
+    Hp = combinator(n_comb, nx, 'p', 'r');        
+    Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
+    Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 end
 
 % disturbance set
@@ -65,5 +70,12 @@ if success
         H{i} = sets(i).A;
         h{i} = sets(i).b;
     end
-    save('./data/verification_MRCI.mat', 'H', 'h', 'comp_time');
+    if strcmp(check, 'analytical')
+        save('./data/verification_MRCI_analytical.mat', 'H', 'h', 'comp_time');
+    elseif strcmp(check, 'data_based')
+        save('./data/verification_MRCI_data_based.mat', 'H', 'h', 'comp_time');
+    elseif strcmp(check, 'candidate')
+        save('./data/verification_MRCI_candidate.mat', 'H', 'h', 'comp_time');
+    end
+        
 end
