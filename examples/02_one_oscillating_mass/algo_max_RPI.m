@@ -40,7 +40,7 @@ Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 
 %% Algorithm 3
 tic;
-iter_sets = [];
+iter_sets = [X_s];
 for iter = 1:max_iter
    
     % Compute Preimage
@@ -72,15 +72,12 @@ end
 
 
 %% Save results
-Cinv = intersect(iter_sets(iter-1), X);
-% invA = Cinv.A;
-% invb = Cinv.b;
-% H_init = X_init.A;
-% h_init = X_init.b;
-% H = {};
-% h = {};
-% for i = 1:length(iter_sets)
-%    H_x_{i,1} = iter_sets(i).A;
-%    h_x_{i,1} = iter_sets(i).b;
-% end
-% save('data/iterative_max_RPI.mat', 'invA', 'invb', 'H_init', 'h_init', 'H_x_', 'h_x_');
+Cinv = intersect(iter_sets(end), X);
+iter_sets = horzcat(iter_sets, Cinv);
+H = {};
+h = {};
+for i = 1:length(iter_sets)
+   H{i,1} = iter_sets(i).A;
+   h{i,1} = iter_sets(i).b;
+end
+save('data/iterative_max_RPI.mat', 'H', 'h');

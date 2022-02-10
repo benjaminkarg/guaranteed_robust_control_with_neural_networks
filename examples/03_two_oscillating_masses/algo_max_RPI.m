@@ -7,7 +7,7 @@ addpath('./../../auxiliary_funs/');
 u_ub =  5.0;
 u_lb = -5.0;
 max_iter = 5;
-r_max = 10;
+r_max = 5;
 
 
 %% Load the neural network
@@ -32,15 +32,16 @@ X_s = Polyhedron(H{end}, h{end});
 
 
 %% Generate hyperplane directions
-n_comb = 3;
-Hp = combinator(n_comb, 2, 'p', 'r');        
+nx = size(H_x, 2);
+n_comb = 5;
+Hp = combinator(n_comb, nx, 'p', 'r');        
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 
 
 %% Algorithm 3
 tic;
-iter_sets = [];
+iter_sets = [X_s];
 for iter = 1:max_iter
    
     % Compute Preimage
@@ -61,26 +62,13 @@ end
 comp_time = toc;
 
 
-%% Plot result
-figure();
-X_init = Polyhedron(H{end}, h{end});
-plot(X_init, 'color', 'red', 'alpha', 0.1);
-hold on;
-for i = 1:length(iter_sets)
-    plot(iter_sets(i,1), 'color', 'blue', 'alpha', 0.5);
-end
-
-
 %% Save results
-Cinv = intersect(iter_sets(iter-1), X);
-% invA = Cinv.A;
-% invb = Cinv.b;
-% H_init = X_init.A;
-% h_init = X_init.b;
-% H = {};
-% h = {};
-% for i = 1:length(iter_sets)
-%    H_x_{i,1} = iter_sets(i).A;
-%    h_x_{i,1} = iter_sets(i).b;
-% end
-% save('data/iterative_max_RPI.mat', 'invA', 'invb', 'H_init', 'h_init', 'H_x_', 'h_x_');
+Cinv = intersect(iter_sets(end), X);
+iter_sets = horzcat(iter_sets, Cinv);
+H = {};
+h = {};
+for i = 1:length(iter_sets)
+   H{i,1} = iter_sets(i).A;
+   h{i,1} = iter_sets(i).b;
+end
+save('data/iterative_max_RPI.mat', 'H', 'h');
