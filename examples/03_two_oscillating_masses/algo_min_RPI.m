@@ -1,0 +1,68 @@
+clear all;
+close all;
+addpath('../../auxiliary_funs/');
+
+%% Params
+u_ub = [ 5.0;  5.0];
+u_lb = [-5.0; -5.0];
+k_max = 100;
+
+
+%% Load the neural network
+load('./data/nn_controller.mat');
+network = make_network_input_admissible(network, u_lb, u_ub);
+
+
+%% Load system
+load('./data/system_and_problem_matrices.mat');
+
+
+%% Load control invariant set
+load('./data/verification_MRCI_candidate.mat');
+A_inv = H{end};
+b_inv = h{end};
+X_s = Polyhedron(A_inv, b_inv);
+
+% admissible state space
+X = Polyhedron(H_x, h_x);
+comp
+% disturbance set
+D = Polyhedron(H_d, h_d);
+
+
+%% Generate hyperplane directions
+n_comb = 3;
+nx = size(H_x, 2);
+Hp = combinator(n_comb, nx, 'p', 'r');        
+Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
+Hp = Hp(any(Hp, 2), :);                 % remove all  zeros row
+
+
+%% Use YALMIP
+tic;
+iter_sets = [];
+for k = 1:k_max
+    
+    % Compute succesor set
+    [r, sets, success] = r_step_invariance(network, Hp, X, X_s, D, 1, A, B, E);
+    
+    % Check if succesor set
+    if success
+        iter_sets = horzcat(iter_sets, sets(1));
+        X_s = sets(2);
+    else
+        break
+    end
+    
+end
+comp_time = toc;
+
+
+%% save results
+H = {};
+h = {};
+for i = 1:length(iter_sets)
+    H{i,1} = iter_sets(i,1).A;
+    h{i,1} = iter_sets(i,1).b;
+end
+save('data/iterative_min_RPI.mat', 'H', 'h', 'comp_time');
