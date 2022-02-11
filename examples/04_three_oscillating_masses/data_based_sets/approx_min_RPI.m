@@ -16,8 +16,9 @@ ns = size(X,1);
 
 
 %% Generate direction of hyperplanes
-rng(13209);
-RPI_A = rand(n_hp, nx) * 2 - 1;
+n_comb = 3;
+RPI_A = combinator(n_comb, nx, 'p', 'r');
+RPI_A = (RPI_A - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 
 
 %% Compute tight bounds

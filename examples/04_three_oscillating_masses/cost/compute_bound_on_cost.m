@@ -4,8 +4,8 @@ addpath('./../../auxiliary_funs/');
 
 
 %% Params
-u_lb = [-5.0; -5.0]; % lower bound of control input
-u_ub = [ 5.0;  5.0]; % upper bound of control input
+u_lb = [-5.0; -5.0; -5.0]; % lower bound of control input
+u_ub = [ 5.0;  5.0;  5.0]; % upper bound of control input
 
 
 %% Load the neural network
