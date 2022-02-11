@@ -7,7 +7,7 @@ addpath('../../auxiliary_funs/');
 u_lb = [-5.0; -5.0; -5.0]; % lower bound of control input
 u_ub = [ 5.0;  5.0;  5.0]; % upper bound of control input
 r_max = 10;  % maximum number of iterations
-check_potential_MRPI = false; % either check a potential data-based MRPI or use random set
+check = 'candidate'; % either 'data_based' set or 'candidate' set, that was chosen
 
 
 %% Load the neural network
@@ -26,10 +26,10 @@ nw = size(E, 2);
 
 % Create candidate set for r-step invariance
 % in this case the MRCI via rungger-tabuada
-if check_potential_MRPI
-    load('./data/MRCI.mat');
-    X_s = Polyhedron(MRCI_A, MRCI_b);
-else
+if strcmp(check, 'data_based')
+    load('./data/approx_max_RPI_sim_based.mat');
+    X_s = Polyhedron(RPI_A, RPI_b * 0.9);
+elseif strcmp(check, 'candidate')
     C_A = [eye(nx); -eye(nx)];
     C_b = ones(2 * nx, 1) * 1.5;
     X_s = Polyhedron(C_A, C_b);
@@ -37,11 +37,16 @@ end
 
 % hyperplanes to be considered for over-approximation of the one-step
 % reachable sets, this case the same hyperplanes as for the MRCI
-if check_potential_MRPI
-    Hp = MRCI_A;
-else
-    rng(1256);
-    Hp = rand(6000, nx) * 2 - 1;
+if strcmp(check, 'data_based')
+    Hp = RPI_A;
+elseif strcmp(check, 'candidate')
+%     rng(1256);
+%     Hp = rand(10000, nx) * 2 - 1;
+    n_comb = 3;
+    Hp = combinator(n_comb, nx, 'p', 'r');
+    Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
+    Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
+    
 end
 
 % disturbance set
@@ -65,9 +70,9 @@ if success
         H{i} = sets(i).A;
         h{i} = sets(i).b;
     end
-    if check_potential_MRPI
-        save('./data/verification_Candidate.mat', 'H', 'h', 'comp_time');
-    else
-        save('./data/verification_MRPI.mat', 'H', 'h', 'comp_time');
+    if strcmp(check, 'data_based')
+        save('./data/verification_MRPI_data_based.mat', 'H', 'h', 'comp_time');
+    elseif strcmp(check, 'candidate')
+        save('./data/verification_MRPI_candidate.mat', 'H', 'h', 'comp_time');
     end
 end
