@@ -32,8 +32,9 @@ max_cost_milp = max_stage_cost(network, min_RPI_analytic, Q, R, A, B, E);
 
 
 %% compute worst-case cost for data - based min RPI
-max_cost_data = max_stage_cost(network, min_RPI_data, Q, R, A, B, E);
+% max_cost_data = max_stage_cost(network, min_RPI_data, Q, R, A, B, E);
 
 
 %% save
-save('./../data/worst_case_cost_min_RPI.mat', 'max_cost_milp', 'max_cost_data');
+% save('./../data/worst_case_cost_min_RPI.mat', 'max_cost_milp', 'max_cost_data');
+save('./../data/worst_case_cost_min_RPI.mat', 'max_cost_milp');
