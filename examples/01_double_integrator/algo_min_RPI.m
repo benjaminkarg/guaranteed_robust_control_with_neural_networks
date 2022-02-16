@@ -3,7 +3,7 @@ close all;
 addpath('../../auxiliary_funs/');
 
 %% Params
-exacter = true;
+exacter = false;
 u_ub = [ 1.0];
 u_lb = [-1.0];
 k_max = 100;

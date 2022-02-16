@@ -40,6 +40,8 @@ X = Polyhedron(H_x, h_x);
 tic;
 [r, sets, success] = r_step_invariance(network, Hp, X, X_s, D, r_max, A, B, E);
 comp_time = toc;
+
+
 %% Plot result
 if success
     figure();
