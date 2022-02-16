@@ -29,13 +29,13 @@ for c_traj in cost:
 
 
 """ Plot average cost """
-fig, ax = plt.subplots(1, 1, figsize = (6, 4.5))
+fig, ax = plt.subplots(1, 1, figsize = (4.5, 4.5))
 # ax.set_yscale('log')
 for avg_cost_traj in avg_cost:
     ax.plot(avg_cost_traj, c = 'C0', lw = 0.3)
 ax.set_ylabel(r'$l_k(x_0)$')
 ax.set_xlabel(r'$k$')
-ax.set_title('Avg. stage cost')
+# ax.set_title('Avg. stage cost')
 
 
 
@@ -44,7 +44,7 @@ max_cost = sio.loadmat('./../data/worst_case_cost_min_RPI.mat')['max_cost']
 ub = np.ones((avg_cost[0].shape[0], 1)) * max_cost;
 ax.plot(ub, c = 'C1', lw = 3.0, ls = '-.', label = r'$\ell_{\infty}$')
 ax.set_xlim([0, 25])
-ax.set_ylim([0, 20])
+# ax.set_ylim([0, 20])
 ax.legend()
 fig.tight_layout()
 plt.savefig("average_stage_cost_one_oscillating_mass.pdf", format = 'pdf')
