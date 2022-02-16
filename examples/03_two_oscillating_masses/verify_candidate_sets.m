@@ -7,7 +7,7 @@ addpath('../../auxiliary_funs/');
 u_lb = [-5.0; -5.0]; % lower bound of control input
 u_ub = [ 5.0;  5.0]; % upper bound of control input
 r_max = 10;  % maximum number of iterations
-check = 'analytical'; %either 'analytical' to check MRPI derived via rungge-tabuada, 'data_based' to check based on learning data or 'candidate' 
+check = 'analytical'; %either 'analytical' to check MRPI derived via rungge-tabuada, 'data_based' to check based on learning data or 'candidate'
 
 
 %% Load the neural network
@@ -44,7 +44,7 @@ if strcmp(check, 'analytical')
     Hp = MRCI_A;
 else
     n_comb = 3;
-    Hp = combinator(n_comb, nx, 'p', 'r');        
+    Hp = combinator(n_comb, nx, 'p', 'r');
     Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
     Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 end
@@ -77,5 +77,5 @@ if success
     elseif strcmp(check, 'candidate')
         save('./data/verification_MRCI_candidate.mat', 'H', 'h', 'comp_time');
     end
-        
+
 end

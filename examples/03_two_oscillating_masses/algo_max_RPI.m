@@ -4,10 +4,10 @@ addpath('./../../auxiliary_funs/');
 
 
 %% Params
-u_ub =  5.0;
-u_lb = -5.0;
-max_iter = 5;
-r_max = 5;
+u_ub = [ 5.0;  5.0];
+u_lb = [-5.0; -5.0];
+max_iter = 10;
+r_max = 10;
 
 
 %% Load the neural network
@@ -27,13 +27,14 @@ X = Polyhedron(H_x, h_x);
 D = Polyhedron(H_d, h_d);
 
 % Initial set (min RPI)
+% MAYBE USE HERE THE DATA BASED MINIMUM RPI
 load('./data/iterative_min_RPI.mat');
 X_s = Polyhedron(H{end}, h{end});
 
 
 %% Generate hyperplane directions
 nx = size(H_x, 2);
-n_comb = 5;
+n_comb = 3;
 Hp = combinator(n_comb, nx, 'p', 'r');        
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
@@ -71,4 +72,4 @@ for i = 1:length(iter_sets)
    H{i,1} = iter_sets(i).A;
    h{i,1} = iter_sets(i).b;
 end
-save('data/iterative_max_RPI.mat', 'H', 'h');
+save('data/iterative_max_RPI.mat', 'H', 'h', 'comp_time');

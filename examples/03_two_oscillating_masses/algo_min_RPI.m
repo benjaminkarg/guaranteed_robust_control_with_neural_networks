@@ -25,7 +25,7 @@ X_s = Polyhedron(A_inv, b_inv);
 
 % admissible state space
 X = Polyhedron(H_x, h_x);
-comp
+
 % disturbance set
 D = Polyhedron(H_d, h_d);
 

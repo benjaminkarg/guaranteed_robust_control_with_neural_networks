@@ -29,11 +29,14 @@ D = Polyhedron(H_d, h_d);
 % Initial set (min RPI)
 load('./data/iterative_min_RPI.mat');
 X_s = Polyhedron(H{end}, h{end});
+% load('./data/approx_min_RPI_sim_based.mat');
+% X_s = Polyhedron(RPI_A, RPI_b);
+X_init = X_s.copy();
 
 
 %% Generate hyperplane directions
 n_comb = 3;
-Hp = combinator(n_comb, 2, 'p', 'r');        
+Hp = combinator(n_comb, 2, 'p', 'r');
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 
@@ -42,13 +45,13 @@ Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 tic;
 iter_sets = [X_s];
 for iter = 1:max_iter
-   
+
     % Compute Preimage
     X_pre = preimage(network, X_s, D, Hp, A, B, E);
-    
+
     % Check if preimage 'r'-step admissible positive invariant
     [r, sets, success] = r_step_invariance(network, Hp, X, X_pre, D, r_max, A, B, E);
-    
+
     % Update if admissible, otherwise break
     if success
         iter_sets = horzcat(iter_sets, X_pre);
@@ -56,14 +59,13 @@ for iter = 1:max_iter
     else
          break;
     end
-    
+
 end
 comp_time = toc;
 
 
 %% Plot result
 figure();
-X_init = Polyhedron(H{end}, h{end});
 plot(X_init, 'color', 'red', 'alpha', 0.1);
 hold on;
 for i = 1:length(iter_sets)
@@ -80,4 +82,4 @@ for i = 1:length(iter_sets)
    H{i,1} = iter_sets(i).A;
    h{i,1} = iter_sets(i).b;
 end
-save('data/iterative_max_RPI.mat', 'H', 'h');
+save('data/iterative_max_RPI.mat', 'H', 'h', 'comp_time');

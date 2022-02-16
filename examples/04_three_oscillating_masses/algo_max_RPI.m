@@ -4,8 +4,8 @@ addpath('./../../auxiliary_funs/');
 
 
 %% Params
-u_ub = [ 5.0;  5.0];
-u_lb = [-5.0; -5.0];
+u_ub = [ 5.0;  5.0;  5.0];
+u_lb = [-5.0; -5.0; -5.0];
 max_iter = 10;
 r_max = 10;
 
@@ -72,4 +72,4 @@ for i = 1:length(iter_sets)
    H{i,1} = iter_sets(i).A;
    h{i,1} = iter_sets(i).b;
 end
-save('data/iterative_max_RPI.mat', 'H', 'h');
+save('data/iterative_max_RPI.mat', 'H', 'h', 'comp_time');
