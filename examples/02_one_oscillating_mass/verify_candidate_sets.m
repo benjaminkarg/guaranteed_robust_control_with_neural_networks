@@ -8,7 +8,7 @@ u_lb = -5.0; % lower bound of control input
 u_ub =  5.0; % upper bound of control input
 r_max = 10;  % maximum number of iterations
 
-check = 'candidate'; %either 'analytical' to check MRPI derived via rungge-tabuada, 'data_based' to check based on learning data or 'candidate' 
+check = 'MRPI'; %either 'analytical' to check MRPI derived via rungge-tabuada, 'MRPI' or 'candidate'
 
 
 %% Load the neural network
@@ -27,9 +27,9 @@ load('./data/system_and_problem_matrices.mat');
 if strcmp(check, 'analytical')
     load('./data/MRCI.mat');
     X_s = Polyhedron(MRCI_A, MRCI_b);
-elseif strcmp(check, 'data_based')
-    load('./data/approx_max_RPI_sim_based.mat');
-    X_s = Polyhedron(RPI_A, RPI_b);
+elseif strcmp(check, 'MRPI')
+    load('./data/iterative_max_RPI.mat');
+    X_s = Polyhedron(H{end}, h{end});
 elseif strcmp(check, 'candidate')
     C_A = [eye(2); -eye(2);];
     C_b = ones(4, 1) * 1.5;
@@ -81,8 +81,8 @@ if success
     end
     if strcmp(check, 'analytical')
         save('./data/verification_MRCI_analytical.mat', 'H', 'h', 'comp_time');
-    elseif strcmp(check, 'data_based')
-        save('./data/verification_MRCI_data_based.mat', 'H', 'h', 'comp_time');
+    elseif strcmp(check, 'MRPI')
+        save('./data/verification_MRPI.mat', 'H', 'h', 'comp_time');
     elseif strcmp(check, 'candidate')
         save('./data/verification_MRCI_candidate.mat', 'H', 'h', 'comp_time');
     end

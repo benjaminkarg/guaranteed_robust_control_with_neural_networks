@@ -49,8 +49,19 @@ Q = eye(2);
 R = 1;
 
 
-%% Compute LQR feedback
-[K, S, e] = dlqr(A, B, Q, R);
+%% Compute things
+MRCIs = {n_combs, 1};
+Ks = {};:
+
+for i = 1:length()
+
+    %% Compute LQR feedback
+    [K, S, e] = dlqr(A, B, Q, R);
+
+
+    
+    
+end
 
 
 %% Save resulting system matrices and disturbance set

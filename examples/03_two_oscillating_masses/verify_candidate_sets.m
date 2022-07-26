@@ -43,7 +43,7 @@ end
 if strcmp(check, 'analytical')
     Hp = MRCI_A;
 else
-    n_comb = 3;
+    n_comb = 4;
     Hp = combinator(n_comb, nx, 'p', 'r');
     Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
     Hp = Hp(any(Hp, 2), :);                 % remove all zeros row

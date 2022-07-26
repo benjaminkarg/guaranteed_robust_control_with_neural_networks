@@ -24,6 +24,13 @@ load('./data/system_and_problem_matrices.mat');
 % in this case the MRCI via rungger-tabuada
 load('./data/MRCI.mat');
 X_s = Polyhedron(MRCI_A, MRCI_b);
+H = [ 1,  0;
+     -1,  0;
+      0,  1;
+      0, -1];
+  
+h = [1.5; 1.5; 1.5; 1.5];
+X_s = Polyhedron(H, h);
 
 % hyperplanes to be considered for over-approximation of the one-step
 % reachable sets, this case the same hyperplanes as for the MRCI

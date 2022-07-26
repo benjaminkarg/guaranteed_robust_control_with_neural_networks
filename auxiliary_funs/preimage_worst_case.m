@@ -1,4 +1,4 @@
-function [Pre] = preimage(network_controller, X_s, D, Hp, A, B, E)
+function [Pre] = preimage_worst_case(network_controller, X_s, d_worst_case, Hp, A, B, E)
 % network controller must satisfy the control input constraints
 % Hp: Direction of considered hyperplanes: n_hp x nx
 % X_s is the set for which the over-approximation of the preimage is
@@ -42,18 +42,23 @@ u0 = sdpvar(nu,1);
 cons = cons + [u0 == weights{1,end} * z{1,end} + biases{1,end}]; % (25k)
 
 d0 = sdpvar(nd,1);
-cons = cons + [D.A * d0 <= D.b];
+% cons = cons + [D.A * d0 <= D.b];
 
 x1 = sdpvar(nx,1);
 cons = cons + [A * x0 + B * u0 + E * d0  - x1 == 0 ]; % (25c)
 cons = cons + [X_s.A * x1 <= X_s.b];
 ops = sdpsettings('solver', 'gurobi');
 
+% Dummy constraint for d0
+cons = cons + [d0 == zeros(nd,1)];
+
+
 b_max = zeros(size(Hp,1),1);
 for i = 1:size(Hp,1)
     obj = -Hp(i,:) * x0;
+    cons(end) = [d0 == d_worst_case(i,:)'];
     optimize(cons, obj, ops);
-    b_max(i,1) = -value(obj);
+    b_max(i,1) = -value(obj)*0.9;
 end
 
 Pre = Polyhedron(Hp, b_max);

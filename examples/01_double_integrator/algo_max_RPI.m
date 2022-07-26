@@ -38,7 +38,7 @@ X_init = X_s.copy();
 
 
 %% Generate hyperplane directions
-n_comb = 5;
+n_comb = 3;
 Hp = combinator(n_comb, 2, 'p', 'r');        
 Hp = (Hp - 1) / (n_comb - 1) * 2 - 1;   % Scale from -1 to 1
 Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
@@ -47,14 +47,18 @@ Hp = Hp(any(Hp, 2), :);                 % remove all zeros row
 %% Algorithm 3
 tic;
 iter_sets = [X_s];
+d_worst_case = compute_d_worst_case(D, Hp, A, E);
 for iter = 1:max_iter
    
     % Compute Preimage
-    X_pre = preimage(network, X_s, D, Hp, A, B, E);
+%     X_pre = preimage(network, X_s, D, Hp, A, B, E);
+    X_pre = preimage_worst_case(network, X_s, d_worst_case, Hp, A, B, E);
+%     figure(); plot(X_pre,'color','blue','alpha',0.5); hold on; plot(X_pre_2,'color','red','alpha',0.5);
     X_pre = intersect(X_pre, X);
     
     % Check if preimage 'r'-step admissible positive invariant
     [r, sets, success] = r_step_invariance(network, Hp, X, X_pre, D, r_max, A, B, E);
+%     success = true;
     save_str = strcat('data/algo_max_RPI_iter_', num2str(iter), '.mat');
     if success
         H = {};

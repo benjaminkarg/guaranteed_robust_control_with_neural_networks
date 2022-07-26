@@ -33,21 +33,6 @@ for pc in param_combs:
     B_list.append(B)
 
 
-""" Admissible state space """
-H_x = np.vstack([np.eye(2), -np.eye(2)])
-h_x = np.ones((4, 1)) * 5.0
-
-
-""" Admissible control input space """
-H_u = np.array([[1], [-1]])
-h_u = np.ones((2, 1))
-
-
-""" Approximation error """
-H_delta = np.array([[1], [-1]])
-h_delta = np.array([[0.01], [0.01]])
-
-
 """ Save system descriptions """
 exp_dic = {'H_x': H_x, 'h_x': h_x, 'H_u': H_u, 'h_u': h_u, 'H_delta': H_delta, 'h_delta': h_delta, 'A_list': A_list, 'B_list': B_list}
 sio.savemat('parametric_system_and_problem_matrices.mat', exp_dic)
